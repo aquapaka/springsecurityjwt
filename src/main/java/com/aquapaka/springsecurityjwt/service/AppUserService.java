@@ -6,18 +6,45 @@ import com.aquapaka.springsecurityjwt.repository.AppUserRepository;
 import com.aquapaka.springsecurityjwt.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class AppUserService {
+public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
     private final RoleRepository roleRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AppUser appUser = appUserRepository.findByUsername(username);
+
+        if (appUser == null) {
+            log.error("User not found in the database");
+            throw new UsernameNotFoundException("user not found in the database");
+        } else {
+            log.error("User found in the database: {}", username);
+        }
+
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        appUser.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        });
+
+        return new User(appUser.getUsername(), appUser.getPassword(), authorities);
+    }
 
     public AppUser saveAppUser(AppUser appUser) {
         log.info("Saving new user {} to the database", appUser.getName());
@@ -45,4 +72,5 @@ public class AppUserService {
         log.info("Fetching all users");
         return appUserRepository.findAll();
     }
+
 }
