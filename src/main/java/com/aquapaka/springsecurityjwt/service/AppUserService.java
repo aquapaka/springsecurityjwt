@@ -20,14 +20,17 @@ public class AppUserService {
     private final RoleRepository roleRepository;
 
     public AppUser saveAppUser(AppUser appUser) {
+        log.info("Saving new user {} to the database", appUser.getName());
         return appUserRepository.save(appUser);
     }
 
     public Role saveRole(Role role) {
+        log.info("Saving new role {} to the database", role.getName());
         return roleRepository.save(role);
     }
 
     public void addRoleToAppUser(String username, String roleName) {
+        log.info("Adding role {} to user {}", roleName, username);
         AppUser appUser = appUserRepository.findByUsername(username);
         Role role = roleRepository.findByName(roleName);
         appUser.getRoles().add(role);
@@ -39,6 +42,7 @@ public class AppUserService {
     }
 
     public List<AppUser> getAppUsers() {
+        log.info("Fetching all users");
         return appUserRepository.findAll();
     }
 }
