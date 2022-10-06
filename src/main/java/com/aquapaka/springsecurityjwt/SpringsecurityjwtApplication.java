@@ -3,10 +3,10 @@ package com.aquapaka.springsecurityjwt;
 import com.aquapaka.springsecurityjwt.model.AppUser;
 import com.aquapaka.springsecurityjwt.model.Role;
 import com.aquapaka.springsecurityjwt.service.AppUserService;
-import org.apache.catalina.User;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 import java.util.ArrayList;
 
@@ -17,6 +17,7 @@ public class SpringsecurityjwtApplication {
 		SpringApplication.run(SpringsecurityjwtApplication.class, args);
 	}
 
+	@Bean
 	CommandLineRunner run(AppUserService appUserService) {
 		return args -> {
 			appUserService.saveRole(new Role(null, "ROLE_USER"));
